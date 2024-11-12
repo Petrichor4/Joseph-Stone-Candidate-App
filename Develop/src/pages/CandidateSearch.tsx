@@ -1,49 +1,94 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { searchGithub, searchGithubUser } from '../api/API';
+import { HiPlusCircle } from "react-icons/hi2";
+import { HiMinusCircle } from "react-icons/hi2";
 import Candidate from '../interfaces/Candidate.interface';
 
 const CandidateSearch = () => {
-  const [cand, setcand] = useState<Candidate>({
+  const [candList, setCandList] = useState<Candidate[]>([]);
+  const [cand, setCand] = useState<Candidate>({
     img: '',
     login: '',
+    email: '',
     location: '',
     company: '',
     bio: '',
-  })
+  });
+
+  const getCandList = async () => {
+    const data = await searchGithub();
+    setCandList(data)
+  };
+
   const getCand = async () => {
-    const data: Candidate = await searchGithub();
-    console.log(data);
-    setcand({
-      img: data.img,
-      login: data.login,
-      location: data.location,
-      company: data.company,
-      bio: data.bio,
-    });
-  }
+    const user = candList.pop();
+    if (user?.login) {
+      const data = await searchGithubUser(user.login);
+      if (data.login) {
+        setCand({
+          img: data.avatar_url,
+          login: data.login,
+          email: data.email || 'No email provided',
+          location: data.location || 'No location provided',
+          company: data.company || 'No company provided',
+          bio: data.bio || 'No bio provided',
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    getCandList();
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
+
+
   const saveCand = async () => {
-    const data: Candidate = await searchGithubUser(cand.login);
     const savedCand = JSON.parse(localStorage.getItem('savedCand') || '[]');
-    savedCand.push(data);
+    savedCand.push(cand);
     localStorage.setItem('savedCand', JSON.stringify(savedCand));
+    getCand();
+  };
+
+  if (!cand.login) {
+    return (
+      <button onClick={getCand}>Start Search</button>
+    )
+  } else if (candList.length === 0) {
+    return (
+      <>
+        <h1>No more candidates</h1>
+        <h2>Refresh the page for more</h2>
+      </>
+    )
+  } else {
+    return (
+      <div id='cand-display'>
+        <h1>CandidateSearch</h1>
+        <section id='cand'>
+          <img src={`${cand.img}`} alt={cand.login} style={{height: 'auto', width: '100%', borderRadius: '30px 30px 0 0'}} />
+          <article id='info'>
+            <h2>{cand.login}</h2>
+            <p>Email: <a href={`mailto:${cand.email}`}>{cand.email}</a></p>
+            <p>Location: {cand.location}</p>
+            <p>Company: {cand.company}</p>
+            <p>Bio: {cand.bio}</p>
+          </article>
+          </section>
+          <div id="buttons">
+            <HiMinusCircle
+            fill='red'
+            size={100}
+            onClick={getCand} />
+            <HiPlusCircle
+            fill='green'
+            size={100}
+            onClick={saveCand} />
+          </div>
+      </div>
+    );
   }
-  // Create component to handle the search for a list of employees that is randomly generated then selecting just one of the employees from that list=> 
-  // function to handle the mouse clicks =>
-  // Create component to display the information in a card on the screen =>
-  return (
-  <div id='cand-display'>
-    <h1>CandidateSearch</h1>
-    <section id='cand'>
-      <img src={`${cand.img}`} alt={cand.login} />
-      <h2>{cand.login}</h2>
-      <h3>{cand.location}</h3>
-      <h4>{cand.company}</h4>
-      <p>{cand.bio}</p>
-      <button onClick={getCand}>Get Candidate</button>
-      <button onClick={saveCand}>Save Candidate</button>
-    </section>
-  </div>
-);
+  
 };
 
 export default CandidateSearch;

@@ -43,6 +43,14 @@ h1 {
   line-height: 1.1;
 }
 
+h2 {
+  margin: 0;
+}
+
+p {
+  width: 380px;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -84,10 +92,49 @@ main {
   align-items: center;
 }
 
+#cand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin-top: 2em;
+  width: 400px;
+  background-color: #000;
+  border-radius: 30px;
+  transition: 300ms;
+}
+
+#info {
+  padding: 1em;
+}
+
+#buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1em;
+}
+
+svg:hover {
+  cursor: pointer;
+  scale: 1.1;
+}
+
+svg:active {
+  scale: 0.9;
+}
+
 tr {
+  text-align: center;
   border-radius: 10px;
   background-color: #000;
   color: white;
+}
+
+td {
+  padding: 5px;
+  width: 175px;
+  height: 80px;
 }
 
 tbody tr:nth-child(odd) {
