@@ -142,9 +142,10 @@ tbody tr:nth-child(odd) {
 }
 
 .nav {
+  width: 100vw;
   display: flex;
   justify-content: flex-start;
-  padding: 1em 2em;
+  padding: 2em  0 1em 5em;
 }
 
 .nav-item {
